@@ -39,14 +39,7 @@ This is necessary because `pty_write` with `]` may not reliably trigger pkg mode
 
 ## Project Activation via Spawn Flag
 
-Instead of using pkg mode interactively, activate the project at spawn time:
-
-```
-# See julia-repl skill for binary detection and Project.toml discovery
-pty_spawn(command="<julia-path>", args=["--project=<project-dir>"], title="Julia REPL")
-```
-
-Then `using PackageName` works immediately.
+Instead of using pkg mode interactively, activate the project at spawn time. See `julia-repl/SKILL.md` for binary detection and Project.toml discovery.
 
 ## First `using` Triggers Precompilation
 

@@ -26,6 +26,7 @@
 - [Create MATLAB_REPL_EDA.md](#create-matlab_repl_edamd)
 - [Add Session Management Guide](#add-session-management-guide)
 - [REPL Spawn Detection — Environment Awareness](#repl-spawn-detection--environment-awareness)
+- [README.md Revision + Skill Reference Cleanup](#readmemd-revision--skill-reference-cleanup)
 
 ---
 
@@ -327,3 +328,23 @@ Replaced hardcoded binary paths in all REPL skills with environment-aware detect
 | `repl-quick-reference/SKILL.md` | Replaced spawn column with skill references |
 | `julia-repl/references/pkg-mode.md` | Replaced spawn line with skill reference |
 | `matlab-repl/references/matpower-usage.md` | Replaced hardcoded venv path with `<venv>` placeholder |
+
+## README.md Revision + Skill Reference Cleanup
+
+### README.md Rewrite
+
+Replaced misleading framing ("battle-tested", "REPL Agent Instructions") with accurate description:
+
+- **Title**: Changed from "opencode REPL Agent Instructions" to "OpenCode REPL Agents & Skills"
+- **Header**: Removed "battle-tested" claim. Explained that agents and skills were created by agents themselves through REPL experimentation, with interaction trails in `temp/`
+- **What You Get**: Added `agents/` section documenting shelldon. Updated skill table to use current kebab-case names (`python-repl`, `matlab-repl`, `julia-repl`, etc.)
+- **How They Were Built**: Replaced "verified through systematic PTY testing" with the actual process: spawn REPL → try something → document what worked/failed → save to `temp/` → extract patterns into skills
+- **Quick Start**: Updated to include agents step
+
+### Skill Reference Cleanup
+
+| File | Change |
+|------|--------|
+| `python-repl-eda/SKILL.md` | Changed reference from legacy `prompts/EXPLORATORY_DATA_ANALYSIS.md` to `repl-eda-workflow` skill |
+| `julia-repl/references/pkg-mode.md` | Replaced duplicated "Project Activation" section with reference to `julia-repl/SKILL.md` |
+| `julia-repl/references/line-editing.md` | Removed comparison table (duplicates `repl-cross-language/SKILL.md`) |

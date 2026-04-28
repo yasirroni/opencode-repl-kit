@@ -21,7 +21,7 @@ description: Use when performing exploratory data analysis in a Python REPL with
 | F | Visualization — save figures to `data/figures/` |
 | G | Consolidation into `scripts/eda_spatial_network.py` |
 
-See [EXPLORATORY_DATA_ANALYSIS.md](../../prompts/EXPLORATORY_DATA_ANALYSIS.md) for language-agnostic phase descriptions.
+See [repl-eda-workflow](../repl-eda-workflow/SKILL.md) for language-agnostic phase descriptions.
 
 ## Data Loading
 
