@@ -42,7 +42,8 @@ This is necessary because `pty_write` with `]` may not reliably trigger pkg mode
 Instead of using pkg mode interactively, activate the project at spawn time:
 
 ```
-pty_spawn(command="/Users/myasirroni/.juliaup/bin/julia", args=["--project=julia/PackageName"], title="Julia REPL")
+# See julia-repl skill for binary detection and Project.toml discovery
+pty_spawn(command="<julia-path>", args=["--project=<project-dir>"], title="Julia REPL")
 ```
 
 Then `using PackageName` works immediately.

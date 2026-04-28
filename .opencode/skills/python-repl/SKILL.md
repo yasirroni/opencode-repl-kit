@@ -15,13 +15,36 @@ Python REPL auto-indents after `:`, breaking nested structures sent inline. Use 
 - **ONE command per `pty_write`** — multiple commands cause syntax errors
 - Use `temp/` directory for files (project root, gitignored) — NOT `/tmp/`
 
-## Spawn Commands
+## Spawn Commands — Python Environment Detection
+
+**Never use system `python3`** — it has no project packages. Always detect and use a virtual environment:
+
+### Step 1: Find the venv
+
+Glob for common venv layouts:
+1. `**/env/bin/python` (this project's convention)
+2. `**/.venv/bin/python` (standard convention)
+3. `**/venv/bin/python` (alternative)
+
+If a venv is found → use its Python binary. If IPython exists at the same path with `ipython` instead of `python`, use that.
+
+### Step 2: Verify isolation
+
+After spawn, confirm you're in a venv:
+```
+pty_write(data="import sys; print(sys.prefix)\n")
+```
+The output should be the venv path (e.g., `/path/to/project/python/env`), NOT `/usr` or `/Library/Frameworks`. If it's a system path, warn: "Running outside a virtual environment. Packages may be missing."
+
+### Step 3: No venv found?
+
+If no venv exists but `uv.lock`, `pyproject.toml`, or `requirements.txt` are present → **ASK USER**: "This looks like a Python project with no virtual environment. Create one with `uv venv`?"
 
 ```
-# Standard Python REPL
+# Example: after detecting venv at python/env/bin/python
 pty_spawn(command="python/env/bin/python", title="Python REPL")
 
-# IPython REPL (magic commands, better tracebacks)
+# IPython REPL (if available)
 pty_spawn(command="python/env/bin/ipython", title="IPython REPL")
 ```
 

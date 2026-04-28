@@ -4,7 +4,8 @@
 
 ```bash
 # Use Python to dynamically resolve the path
-python/env/bin/python -c "from matpower import path_matpower; print(path_matpower)"
+# Replace <venv> with your detected venv path (see python-repl skill)
+<venv>/bin/python -c "from matpower import path_matpower; print(path_matpower)"
 ```
 
 If `matpower` is not installed:
@@ -16,10 +17,11 @@ uv pip install matpower
 
 ```matlab
 % Add matpower main directory
-addpath('python/env/lib/python3.14/site-packages/matpower')
+% Replace <venv> with your detected venv path
+addpath('<venv>/lib/python3.14/site-packages/matpower')
 
 % Add data directory for case files
-addpath('python/env/lib/python3.14/site-packages/matpower/data')
+addpath('<venv>/lib/python3.14/site-packages/matpower/data')
 
 % Verify
 which case9
@@ -42,7 +44,7 @@ disp(results.gen);
 
 ## Available Case Files
 
-Located in `python/env/lib/python3.14/site-packages/matpower/data/`:
+Located in `<venv>/lib/python3.14/site-packages/matpower/data/`:
 - `case9.m`, `case14.m`, `case30.m`, `case57.m`, `case118.m`, `case300.m`
 - `case_ACTIVSg200.m`, `case_ACTIVSg500.m`, `case_ACTIVSg2000.m`, etc.
 

@@ -9,10 +9,10 @@ description: Use when you need a one-page reference for REPL patterns across Pyt
 
 | Language | Command |
 |----------|---------|
-| Python | `pty_spawn(command="python/env/bin/python", title="Python REPL")` |
-| IPython | `pty_spawn(command="python/env/bin/ipython", title="IPython REPL")` |
-| MATLAB | `pty_spawn(command="/Applications/MATLAB_R2025b.app/bin/matlab", args=["-nojvm", "-nodesktop"], title="MATLAB REPL")` |
-| Julia | `pty_spawn(command="/Users/myasirroni/.juliaup/bin/julia", args=["--project=julia/PackageName"], title="Julia REPL")` |
+| Python | See `python-repl` skill — detects venv, verifies isolation |
+| IPython | See `python-repl` skill — same detection, use `ipython` binary |
+| MATLAB | See `matlab-repl` skill — detects binary (macOS/Windows/Linux) |
+| Julia | See `julia-repl` skill — detects binary, auto-activates Project.toml |
 
 ## Critical Rules — Always Follow
 

@@ -30,7 +30,8 @@ description: Use when managing REPL session lifecycle — deciding when to kill 
 
 ```
 # Start background session that runs indefinitely
-pty_spawn(command="python/env/bin/python", title="Background Monitor")
+# See python-repl skill for venv detection and binary discovery
+pty_spawn(command="<venv>/bin/python", title="Background Monitor")
 
 # Send a long-running or periodic task
 pty_write(data="while True: print('alive'); time.sleep(10)\n")

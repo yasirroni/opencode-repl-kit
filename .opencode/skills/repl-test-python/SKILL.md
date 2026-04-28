@@ -18,8 +18,8 @@ description: Use when testing the Python packagename package via REPL — import
 ## Quick Start
 
 ```
-# Spawn
-pty_spawn(command="python/env/bin/python", title="Python REPL")
+# Spawn — see python-repl skill for venv detection and binary discovery
+# After detecting venv, use: pty_spawn(command="<venv>/bin/python", title="Python REPL")
 
 # Import
 pty_write(data="import sys; sys.path.insert(0, 'python')\n")

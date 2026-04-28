@@ -18,8 +18,8 @@ description: Use when testing the MATLAB PackageName package via REPL — adding
 ## Quick Start
 
 ```
-# Spawn
-pty_spawn(command="/Applications/MATLAB_R2025b.app/bin/matlab", args=["-nojvm", "-nodesktop"], title="MATLAB REPL")
+# Spawn — see matlab-repl skill for binary detection
+# After detecting binary, use: pty_spawn(command="<matlab-path>", args=["-nojvm", "-nodesktop"], title="MATLAB REPL")
 
 # Wait 8-12 seconds for >> prompt
 

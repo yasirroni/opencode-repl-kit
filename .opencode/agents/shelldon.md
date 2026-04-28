@@ -19,11 +19,15 @@ mode: subagent
 
 ## REPL Spawn Decision Tree
 
-| Language | Spawn Command | Wait For |
+See each language's base `*-repl` skill for spawn detection and binary discovery:
+
+| Language | Skill to Load | Wait For |
 |----------|---------------|----------|
-| Python | `pty_spawn(command="python/env/bin/python", title="Python REPL")` | `>>>` |
-| MATLAB | `pty_spawn(command="/Applications/MATLAB_R2025b.app/bin/matlab", args=["-nojvm", "-nodesktop"], title="MATLAB REPL")` | `>> ` (8-12s) |
-| Julia | `pty_spawn(command="/Users/myasirroni/.juliaup/bin/julia", args=["--project=julia/PackageName"], title="Julia REPL")` | `julia> ` (~8s) |
+| Python | `python-repl` — detects venv, verifies isolation | `>>>` |
+| MATLAB | `matlab-repl` — detects binary, handles macOS/Windows/Linux | `>> ` (8-12s) |
+| Julia | `julia-repl` — detects binary, auto-activates Project.toml | `julia> ` (~8s) |
+
+Load the base skill first. It has the glob patterns for finding the right binary and the detection steps.
 
 ## Data Inspection Checklist
 

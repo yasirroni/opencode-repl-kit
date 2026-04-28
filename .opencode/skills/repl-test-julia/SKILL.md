@@ -18,8 +18,8 @@ description: Use when testing the Julia PackageName package via REPL — activat
 ## Quick Start
 
 ```
-# Spawn with project activated
-pty_spawn(command="/Users/myasirroni/.juliaup/bin/julia", args=["--project=julia/PackageName"], title="Julia REPL")
+# Spawn — see julia-repl skill for binary detection and Project.toml activation
+# After detecting binary and project, use: pty_spawn(command="<julia-path>", args=["--project=<project-dir>"], title="Julia REPL")
 
 # Wait ~8 seconds for julia> prompt
 

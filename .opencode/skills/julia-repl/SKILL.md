@@ -15,14 +15,30 @@ Julia REPL fully supports inline function and struct definitions — unlike MATL
 - **ONE command per `pty_write`**
 - Use `temp/` directory for `.jl` files (project root, gitignored)
 
-## Spawn Commands
+## Spawn Commands — Julia Binary + Project Detection
+
+### Julia Binary
+
+1. Try `~/.juliaup/bin/julia` (juliaup installs)
+2. Fall back to `julia` (in PATH)
+3. If neither works → **ASK USER**: "Where is Julia installed? (common: `~/.juliaup/bin/julia` or `julia` on PATH)"
+
+### Project Activation
+
+Always activate a project-level `Project.toml` to avoid polluting `~/.julia/packages/`:
+
+1. Glob for `**/Project.toml` (excluding `~/.julia/` system-level files)
+2. If found → spawn with `--project=<parent-dir>` flag
+3. If none found → spawn bare (fine for exploration)
+
+Using `--project` ensures `] add` installs packages into the project's environment, not the global one.
 
 ```
-# Standard Julia REPL
-pty_spawn(command="/Users/myasirroni/.juliaup/bin/julia", title="Julia REPL")
+# Bare Julia REPL
+pty_spawn(command="julia", title="Julia REPL")
 
-# With project activated (for using PackageName)
-pty_spawn(command="/Users/myasirroni/.juliaup/bin/julia", args=["--project=julia/PackageName"], title="Julia REPL")
+# With project activated (after detecting Project.toml in julia/PackageName/)
+pty_spawn(command="julia", args=["--project=julia/PackageName"], title="Julia REPL")
 ```
 
 **Wait ~8 seconds** for the `julia> ` prompt before sending commands.

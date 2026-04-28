@@ -17,9 +17,21 @@ MATLAB REPL does NOT support inline function definitions. All functions must be 
 - Use **semicolons** to suppress verbose output
 - Use **backspace Ctrl+H** for backspace, NOT DEL character
 
-## Spawn Command
+## Spawn Command — MATLAB Binary Detection
+
+MATLAB has no simple `matlab` command on macOS. Detect the binary before spawning:
+
+1. **macOS**: Glob `/Applications/MATLAB_*.app/bin/matlab` to find installed versions
+   - If exactly one found → use it
+   - If multiple → pick the highest version (lexicographic sort on `R20*`)
+   - If none found → **ASK USER**: "Where is MATLAB installed? (common: `/Applications/MATLAB_R2025b.app/bin/matlab`)"
+2. **Windows**: `matlab` is typically on PATH — try `pty_spawn(command="matlab", args=["-nojvm", "-nodesktop"])`
+3. **Linux**: Usually at `/usr/local/MATLAB/R20*b/bin/matlab` or added to PATH
+
+**Always use** `-nojvm -nodesktop` flags to reduce startup time and resource usage.
 
 ```
+# Example: after detecting binary at /Applications/MATLAB_R2025b.app/bin/matlab
 pty_spawn(command="/Applications/MATLAB_R2025b.app/bin/matlab", args=["-nojvm", "-nodesktop"], title="MATLAB REPL")
 ```
 

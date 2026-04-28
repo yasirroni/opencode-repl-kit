@@ -25,6 +25,7 @@
 - [Update Project Docs](#update-project-docs)
 - [Create MATLAB_REPL_EDA.md](#create-matlab_repl_edamd)
 - [Add Session Management Guide](#add-session-management-guide)
+- [REPL Spawn Detection — Environment Awareness](#repl-spawn-detection--environment-awareness)
 
 ---
 
@@ -285,3 +286,44 @@ Created `.opencode/skills/matlab-repl-eda/` — mirrors Python/Julia EDA skill s
 ## Add Session Management Guide
 
 Consolidated into `.opencode/skills/repl-session-management/` (see "Add pty_read Best Practices" above). Covers kill vs keep alive decisions, concurrent REPLs, background spy pattern, state checkpointing, and recovery after unexpected exit.
+
+## REPL Spawn Detection — Environment Awareness
+
+Replaced hardcoded binary paths in all REPL skills with environment-aware detection logic. Each base `*-repl` skill is now the single source of truth for spawn detection; all other files reference it.
+
+### MATLAB Binary Detection (`matlab-repl/SKILL.md`)
+
+- **macOS**: Glob `/Applications/MATLAB_*.app/bin/matlab` — auto-picks highest version if multiple found
+- **Windows**: `matlab` is typically on PATH
+- **Linux**: `/usr/local/MATLAB/R20*b/bin/matlab` or PATH
+- If none found → asks user for the path
+- Always uses `-nojvm -nodesktop` flags
+
+### Python Environment Detection (`python-repl/SKILL.md`)
+
+- Globs for `**/env/bin/python`, `**/.venv/bin/python`, `**/venv/bin/python`
+- After spawn: verifies isolation via `import sys; print(sys.prefix)` — warns if running outside venv
+- If no venv but project markers exist (`uv.lock`, `pyproject.toml`, `requirements.txt`) → asks user to create one
+- Never uses system `python3`
+
+### Julia Binary + Project Detection (`julia-repl/SKILL.md`)
+
+- Binary: tries `~/.juliaup/bin/julia`, falls back to `julia` (PATH)
+- Project: globs for `**/Project.toml` (excluding system-level `~/.julia/`), auto-activates via `--project=<dir>` flag
+- Prevents `] add` from polluting `~/.julia/packages/`
+
+### Files Updated (11 total)
+
+| File | Change |
+|------|--------|
+| `matlab-repl/SKILL.md` | Added binary detection section, removed hardcoded spawn |
+| `python-repl/SKILL.md` | Added env detection + isolation verification, removed hardcoded spawn |
+| `julia-repl/SKILL.md` | Added binary + project detection, removed hardcoded spawn |
+| `shelldon.md` | Replaced spawn decision tree with skill references |
+| `repl-test-python/SKILL.md` | Replaced spawn line with skill reference |
+| `repl-test-matlab/SKILL.md` | Replaced spawn line with skill reference |
+| `repl-test-julia/SKILL.md` | Replaced spawn line with skill reference |
+| `repl-session-management/SKILL.md` | Replaced example spawn with skill reference |
+| `repl-quick-reference/SKILL.md` | Replaced spawn column with skill references |
+| `julia-repl/references/pkg-mode.md` | Replaced spawn line with skill reference |
+| `matlab-repl/references/matpower-usage.md` | Replaced hardcoded venv path with `<venv>` placeholder |
