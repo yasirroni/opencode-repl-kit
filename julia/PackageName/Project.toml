@@ -1,0 +1,16 @@
+name = "PackageName"
+uuid = "28e39556-764c-48cc-b0bb-6a950841f02e"
+version = "0.1.0"
+authors = ["Muhammad Yasirroni <yasirroni@users.noreply.github.com>"]
+
+[deps]
+Arrow = "69666777-d1a9-59fb-9406-91d4454c9d45"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+NCDatasets = "85f8d34a-cbdd-5861-8df4-14fed0d494ab"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+
+[compat]
+Arrow = "2.8.1"
+DataFrames = "1.8.2"
+NCDatasets = "0.14.15"
+Plots = "1.41.6"

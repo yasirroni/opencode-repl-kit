@@ -1,0 +1,17 @@
+# Temporary scratch files for REPL exec()
+temp/
+
+# Python virtual environment
+python/env/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Julia precompilation cache
+julia/PackageName/Manifest.toml
+
+# Binary
+*.arrow
+*.nc
+*.png
