@@ -11,7 +11,7 @@ Julia REPL fully supports inline function and struct definitions — unlike MATL
 
 ## Critical Rules
 
-- **ALWAYS append `\n`** to every `pty_write`
+- **ALWAYS append `\n`** to every `pty_write` — `pty_write` sends raw keystrokes. Without `\n`, the text is typed but NEVER executed. The REPL waits forever for Enter. If you see no output after a write, this is the #1 cause.
 - **ONE command per `pty_write`**
 - Use `temp/` directory for `.jl` files (project root, gitignored)
 
@@ -94,10 +94,12 @@ Julia has **full ANSI terminal line-editing support**.
 
 | Gotcha | Solution |
 |--------|----------|
-| Missing `\n` | Always append `\n` |
+| Missing `\n` in `pty_write` | **Most common bug.** Text typed but not executed. Fix: send `\n` to run pending text, then always include `\n` in future writes |
+| `round(Float32, digits=N)` fails | Julia's `round` with `digits` keyword doesn't support Float32. Use `@printf` or `round(Float64(x), digits=N)` |
 | First `using` | Precompilation delay (~1-3 seconds) — wait |
 | Session killed | All state lost — re-include everything |
 | Stuck in `pkg>` mode | Send backspace `\x7f` to exit |
+| `using Printf` needed for `@printf` | Not auto-loaded — must import explicitly |
 
 ## When in Doubt
 
@@ -109,3 +111,12 @@ Julia has **full ANSI terminal line-editing support**.
 
 - [Package mode](references/pkg-mode.md) — Pkg mode entry/exit, add commands
 - [Line editing](references/line-editing.md) — Full ANSI support details
+
+## After Tasks: Keep REPL Alive
+
+**Do NOT kill the REPL after completing tasks.** Leave it running so the user can inspect state, run their own commands, or continue exploration.
+
+**Always tell the user:**
+> REPL session `pty_xxxxxxxx` is still running. You can open and interact with it via `/pty-open-background-spy`.
+
+Only kill the REPL if the user explicitly asks you to.

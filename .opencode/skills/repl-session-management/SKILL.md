@@ -5,19 +5,32 @@ description: Use when managing REPL session lifecycle — deciding when to kill 
 
 # REPL Session Management
 
+## Default Behavior: Keep REPL Alive After Tasks
+
+**After completing EDA or any REPL-driven task, DO NOT kill the REPL by default.** Leave it running so the user can inspect the session state, run their own commands, or continue exploration.
+
+**Always tell the user** when a REPL session is left alive:
+> REPL session `pty_xxxxxxxx` is still running. You can open and interact with it via `/pty-open-background-spy`.
+
+**Only kill the REPL if:**
+- The user explicitly asks you to kill it
+- REPL is in a truly unrecoverable state (infinite loop, frozen, crashed)
+- Memory is growing dangerously large from accumulated outputs
+
 ## When to Keep REPL Alive
 
 - Data has been loaded and is expensive to reload (large datasets, network requests)
 - Package precompilation just finished (Julia) — killing loses the cache
 - Multiple sequential operations planned in the same language
 - User explicitly says "keep session alive"
+- **Default after EDA** — always leave REPL alive unless user says otherwise
 
 ## When to Kill and Respawn
 
 - REPL is in a bad state (unrecoverable error, infinite loop, frozen)
 - Wrong language/version selected and needs to change
 - Memory is growing too large from accumulated outputs
-- User explicitly asks for a fresh session
+- User explicitly asks you to kill it or start fresh
 
 ## Multiple Concurrent REPLs
 
@@ -39,9 +52,12 @@ pty_write(data="while True: print('alive'); time.sleep(10)\n")
 # Periodically check output (use offset to get latest)
 pty_read(id="pty_xxx", offset=(total_lines - 20), limit=20)
 
-# Kill when done
-pty_kill(id="pty_xxx", cleanup=true)
+# DO NOT kill by default — leave alive for user inspection
+# Only kill if user explicitly asks:
+# pty_kill(id="pty_xxx", cleanup=true)
 ```
+
+**After completing work:** Tell the user the session ID and that they can use `/pty-open-background-spy` to interact with it.
 
 ## State Checkpointing
 
@@ -130,6 +146,7 @@ pty_read(id="pty_xxx", offset=(total_lines - 50), limit=50)
 
 ### Recovery Patterns
 
-- If REPL is stuck (no prompt, no output), try sending `\n` to wake it
-- If REPL appears dead after error, send a simple command like `print('ok')` to test
-- For MATLAB's `>> ` prompt, wait the full 8-12 seconds before reading
+- **REPL stuck, no output after pty_write** → 99% chance you forgot `\n`. Send `pty_write(data="\n")` to execute the pending text, then check output.
+- **REPL stuck in continuation** → Send `\x03` (Ctrl+C) to cancel and return to prompt.
+- **REPL appears dead after error** → Send a simple command like `print('ok')` / `1+1` / `disp('ok')` to test.
+- **MATLAB `>> ` prompt not appearing** → Wait the full 8-12 seconds before reading.

@@ -15,3 +15,6 @@ julia/PackageName/Manifest.toml
 *.arrow
 *.nc
 *.png
+
+# Artifacts
+.DS_Store

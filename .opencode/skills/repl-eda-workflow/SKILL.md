@@ -9,6 +9,10 @@ description: Use when starting an exploratory data analysis session in any langu
 
 **State preservation is everything.** Load all data ONCE at the start. All data stays in memory across exploration phases. Each step builds on previous state.
 
+### ⚠️ Critical: Always append `\n` to `pty_write`
+
+Every `pty_write` call must end with `\n`. Without it, the text is typed but never executed, and the REPL waits forever. If you send a command and see no output, check for missing `\n` first. See `repl-session-management` for the full diagnostic checklist.
+
 ## Phase-Based Workflow
 
 ### Phase A: Data Loading & First Inspection
@@ -55,17 +59,37 @@ Assemble all exploration into a single executable script using language-appropri
 
 ## Iterative Refinement Pattern
 
+The recommended workflow is **one temp file per phase**, executed and refined in the REPL:
+
 ```
-1. Write exploratory code to temp file
-2. Execute via language's include/exec pattern
-3. pty_read() → inspect output
-4. Find something interesting or problematic
-5. Edit temp file to refine
-6. Repeat until satisfied
-7. Move working code to consolidated script
+1. Write exploratory code for ONE phase to temp file (e.g., temp/eda_01_load.jl)
+2. Execute via language's include/exec pattern: include("temp/eda_01_load.jl")\n
+3. pty_read() → inspect output, find errors or interesting results
+4. Edit temp file to fix/refine
+5. Re-include and verify
+6. Move to next phase with new temp file
+7. After all phases explored, consolidate into single pipeline script
 ```
 
-**Write to temp file, execute, inspect output, refine.** Never type complex code directly in `pty_write`.
+**Rules:**
+- Each temp file should be **short and focused** (one phase, one concern)
+- **Never type complex code directly in `pty_write`** — always write to temp file first
+- Data loaded in early temp files stays in REPL memory for later phases
+- When consolidating, merge all working temp files into one script with clear phase markers
+
+**Consolidation destination:** Default is `scripts/eda_spatial_network.jl` (or language equivalent). If the project has a different convention (e.g., `eda/`, `analysis/`), **ask the user** where to place the final pipeline.
+
+## After EDA: Keep REPL Alive
+
+**Do NOT kill the REPL after completing EDA.** Leave it running so the user can:
+- Inspect loaded data and variables
+- Run their own ad-hoc queries
+- Continue exploration interactively
+
+**Always tell the user:**
+> REPL session `pty_xxxxxxxx` is still running with all data loaded. You can open and interact with it via `/pty-open-background-spy`.
+
+Only kill the REPL if the user explicitly asks you to.
 
 ## Language-Specific Skills
 

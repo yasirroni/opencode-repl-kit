@@ -16,9 +16,25 @@ description: Use when you need a one-page reference for REPL patterns across Pyt
 
 ## Critical Rules — Always Follow
 
-1. **ALWAYS append `\n`** — without it, command is typed but NOT executed
-2. **ONE command per `pty_write`** — multiple commands cause syntax errors
-3. **Use correct backspace** — Python/Julia: DEL, MATLAB: Ctrl+H
+### ⚠️ Rule #1: ALWAYS append `\n` to every `pty_write`
+
+**Without `\n`, the command is TYPED but NOT EXECUTED.** The REPL sits idle waiting for Enter.
+
+```
+# WRONG — text is typed, never runs, REPL waits forever:
+pty_write(data="include(\"temp/foo.jl\")", id="pty_xxx")
+
+# CORRECT — \n acts as pressing Enter:
+pty_write(data="include(\"temp/foo.jl\")\n", id="pty_xxx")
+```
+
+**If you sent a command and see no output, assume you forgot `\n` until proven otherwise.**
+
+### Rule #2: ONE command per `pty_write`
+Multiple commands in one write cause syntax errors.
+
+### Rule #3: Use correct backspace
+Python/Julia: DEL character, MATLAB: Ctrl+H
 
 ## Write Patterns — Inline vs File
 
@@ -79,8 +95,39 @@ All languages use `temp/` at project root (gitignored):
 | MATLAB | ~8-12 seconds |
 | Julia | ~8 seconds (+ precompilation on first `using`) |
 
+## Gotchas — Language-Specific
+
+### Julia
+| Issue | Fix |
+|-------|-----|
+| `round(Float32, digits=N)` fails | Convert to Float64 first: `round(Float64(x), digits=N)` or use `@printf` |
+| No `skipnan` in Statistics | Use `mean(a[.!isnan.(a)])` — only `skipmissing` exists |
+| GR "connect: Connection refused" | Harmless — figures still save. Ignore the warning |
+| `using Printf` not auto-loaded | Must import explicitly for `@printf` |
+
+### Python
+| Issue | Fix |
+|-------|-----|
+| Auto-indent after `:` | Use file + `exec()` for nested code |
+| `python3` has no packages | Use venv binary |
+
+### MATLAB
+| Issue | Fix |
+|-------|-----|
+| No inline functions | Write to `.m` file + `addpath` |
+| DEL key prints literal | Use Ctrl+H for backspace |
+
 ## When in Doubt
 
 - **Python**: Write to `.py` file, execute with `exec()`
 - **MATLAB**: Write to `.m` file, add to path, call by name
 - **Julia**: Try inline first, write to `.jl` file for large code, use `include()`
+
+## After Tasks: Keep REPL Alive
+
+**Do NOT kill the REPL after completing tasks.** Leave it running so the user can inspect state, run their own commands, or continue exploration.
+
+**Always tell the user:**
+> REPL session `pty_xxxxxxxx` is still running. You can open and interact with it via `/pty-open-background-spy`.
+
+Only kill the REPL if the user explicitly asks you to.

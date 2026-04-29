@@ -9,6 +9,10 @@ description: Use when performing exploratory data analysis in a Python REPL with
 
 **State preservation is everything.** Load all data ONCE at the start. All data stays in memory across exploration phases. Each step builds on previous state.
 
+### ⚠️ Critical: Always append `\n` to `pty_write`
+
+When executing temp files: `pty_write(data="exec(open('temp/eda_01_load_data.py').read())\n")` — the `\n` is mandatory. Without it, the text is typed but never executed, and the REPL waits forever. If you see no output after a write, check for missing `\n` first.
+
 ## Phase Workflow
 
 | Phase | Task |
@@ -85,3 +89,12 @@ plt.close()  # ALWAYS close to free memory
 
 - [xarray patterns](references/xarray-patterns.md) — lazy loading, slicing, NaN handling
 - [matplotlib PTY](references/matplotlib-pty.md) — Agg backend, savefig patterns, figure management
+
+## After EDA: Keep REPL Alive
+
+**Do NOT kill the Python REPL after completing EDA.** Leave it running so the user can inspect loaded DataArrays, run ad-hoc queries, or continue exploration.
+
+**Always tell the user:**
+> REPL session `pty_xxxxxxxx` is still running with all data loaded. You can open and interact with it via `/pty-open-background-spy`.
+
+Only kill the REPL if the user explicitly asks you to.

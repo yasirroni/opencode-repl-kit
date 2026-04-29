@@ -11,7 +11,7 @@ MATLAB REPL does NOT support inline function definitions. All functions must be 
 
 ## Critical Rules
 
-- **ALWAYS append `\n`** to every `pty_write`
+- **ALWAYS append `\n`** to every `pty_write` — without it, command is typed but NOT executed. `pty_write` sends raw keystrokes; `\n` is the Enter key. If you send a command and see no output, this is the #1 cause.
 - **ONE command per `pty_write`**
 - Use `temp/` directory for `.m` files (project root, gitignored)
 - Use **semicolons** to suppress verbose output
@@ -73,7 +73,7 @@ MATLAB checks file timestamps automatically. Modifying a `.m` file and calling t
 
 | Gotcha | Solution |
 |--------|----------|
-| Missing `\n` | Always append `\n` |
+| Missing `\n` in `pty_write` | **Most common bug.** Text typed but not executed. Fix: send `\n` to run pending text, then always include `\n` in future writes |
 | No semicolon | Verbose output printed — use `;` |
 | Inline function definition | Error — use `.m` file + `addpath` |
 | Using DEL for backspace | Prints literal character — use Ctrl+H |
@@ -92,3 +92,12 @@ MATLAB checks file timestamps automatically. Modifying a `.m` file and calling t
 
 - [MATPOWER usage](references/matpower-usage.md) — MATPOWER setup, case files, power flow
 - [Scripts via batch](references/scripts-via-batch.md) — Running scripts via `matlab -batch`
+
+## After Tasks: Keep REPL Alive
+
+**Do NOT kill the REPL after completing tasks.** Leave it running so the user can inspect state, run their own commands, or continue exploration.
+
+**Always tell the user:**
+> REPL session `pty_xxxxxxxx` is still running. You can open and interact with it via `/pty-open-background-spy`.
+
+Only kill the REPL if the user explicitly asks you to.

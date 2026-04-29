@@ -9,6 +9,10 @@ description: Use when performing exploratory data analysis in a MATLAB REPL with
 
 **State preservation is everything.** Load all data ONCE at the start. All data stays in memory across exploration phases. Each step builds on previous state.
 
+### ⚠️ Critical: Always append `\n` to `pty_write`
+
+When executing commands: `pty_write(data="addpath('temp');\n")` — the `\n` is mandatory. Without it, the text is typed but never executed, and the REPL waits forever. If you see no output after a write, check for missing `\n` first.
+
 ## Phase Workflow
 
 | Phase | Task |
@@ -77,3 +81,12 @@ close;  % IMPORTANT — free memory
 ## References
 
 - [Python bridge](references/python-bridge.md) — Using Python from MATLAB for NetCDF/Arrow loading
+
+## After EDA: Keep REPL Alive
+
+**Do NOT kill the MATLAB REPL after completing EDA.** Leave it running so the user can inspect loaded arrays, run ad-hoc queries, or continue exploration.
+
+**Always tell the user:**
+> REPL session `pty_xxxxxxxx` is still running with all data loaded. You can open and interact with it via `/pty-open-background-spy`.
+
+Only kill the REPL if the user explicitly asks you to.

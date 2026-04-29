@@ -11,7 +11,7 @@ Python REPL auto-indents after `:`, breaking nested structures sent inline. Use 
 
 ## Critical Rules
 
-- **ALWAYS append `\n`** to every `pty_write` — without it, command is typed but NOT executed
+- **ALWAYS append `\n`** to every `pty_write` — without it, command is typed but NOT executed. `pty_write` sends raw keystrokes; `\n` is the Enter key. If you send a command and see no output, this is the #1 cause.
 - **ONE command per `pty_write`** — multiple commands cause syntax errors
 - Use `temp/` directory for files (project root, gitignored) — NOT `/tmp/`
 
@@ -101,7 +101,7 @@ Functions defined via `exec()` are available in REPL namespace. Re-executing rep
 
 | Gotcha | Solution |
 |--------|----------|
-| Missing `\n` | Always append `\n` |
+| Missing `\n` in `pty_write` | **Most common bug.** Text typed but not executed. Fix: send `\n` to run pending text, then always include `\n` in future writes |
 | Multiple commands in one write | One command per write |
 | Nested if/elif/else inline | Use file + exec() |
 | Using `python3` instead of venv | Use `python/env/bin/python` |
@@ -119,3 +119,12 @@ Functions defined via `exec()` are available in REPL namespace. Re-executing rep
 - [Multiline patterns](references/multiline-patterns.md) — detailed auto-indent analysis, all approaches
 - [IPython magic](references/ipython-magic.md) — magic commands, autoreload patterns
 - [Line editing](references/line-editing.md) — Ctrl+U/K/A/E, backspace details
+
+## After Tasks: Keep REPL Alive
+
+**Do NOT kill the REPL after completing tasks.** Leave it running so the user can inspect state, run their own commands, or continue exploration.
+
+**Always tell the user:**
+> REPL session `pty_xxxxxxxx` is still running. You can open and interact with it via `/pty-open-background-spy`.
+
+Only kill the REPL if the user explicitly asks you to.

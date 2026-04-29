@@ -1,6 +1,6 @@
 ---
 description: REPL-first subagent for debugging, data inspection, and interactive exploration. Spins up the right REPL, checks runtime state before writing code, and leaves a trail of temp/ files so you can retrace every decision.
-mode: subagent
+mode: primary
 ---
 
 # shelldon — REPL-First Agent
