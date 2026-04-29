@@ -30,8 +30,26 @@ pty_write(data="include(\"temp/foo.jl\")\n", id="pty_xxx")
 
 **If you sent a command and see no output, assume you forgot `\n` until proven otherwise.**
 
-### Rule #2: ONE command per `pty_write`
-Multiple commands in one write cause syntax errors.
+### Rule #2: Minimize PTY writes — batch when possible
+
+**One task = one pty_write.** Each PTY call adds ~1-5ms latency. For long-running code (>1s), negligible. For short ops, matters.
+
+```
+# BAD — 4 PTY calls for independent commands
+pty_write(data="using Pkg\n")
+pty_write(data="Pkg.activate(...)\n")
+pty_write(data="Pkg.instantiate()\n")
+pty_write(data="using Revise\n")
+
+# GOOD — 1 PTY call, multiline string
+pty_write(data="using Pkg; Pkg.activate(...); Pkg.instantiate(); using Revise\n")
+
+# BEST for exploration — write file, single include
+# temp/eda_01.jl
+# Then: pty_write(data="include(\"temp/eda_01.jl\")\n")
+```
+
+**When to separate into multiple writes:** Only when next command depends on previous output.
 
 ### Rule #3: Use correct backspace
 Python/Julia: DEL character, MATLAB: Ctrl+H

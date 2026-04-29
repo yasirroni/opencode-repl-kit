@@ -103,9 +103,13 @@ BSON.@load "temp/checkpoint.bson"
 
 ### When to Read
 
-- Always read after sending a command to verify it executed
-- Check for errors before sending the next command
-- If no output appears within ~5 seconds, the command may be done or stuck
+- **Read after** when you need the output to decide the next action
+- **Don't read** when commands are independent — batch them into fewer `pty_write` calls
+- **Batch write without reading** when running a sequence of independent commands
+- **Read once after a batch** of writes to verify overall success
+- If no output appears within ~5 seconds after your final `\n`, the command may be done or stuck
+
+**Key insight: PTY bridge latency accumulates per `pty_write` call. Each call adds ~1-5ms overhead. For long-running Julia/MATLAB code (>1s), this is negligible. But for short operations, fewer writes = less overhead. One task = one pty_write.**
 
 ### Prompt Detection
 

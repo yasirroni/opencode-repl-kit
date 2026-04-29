@@ -51,6 +51,36 @@ edges_df = DataFrame(Arrow.Table("data/edges.arrow"))
 
 **Execute via:** `pty_write(data="include(\"temp/eda_01_load_data.jl\")\n")`
 
+## Exploration Workflow — Write All, Eval Once, Read Results
+
+The key insight for EDA: **write your full exploration in a `.jl` file, include it, read results**. Don't micro-manage line by line.
+
+```
+# temp/eda_01_load.jl — full Phase A exploration
+using NCDatasets, Arrow, DataFrames, Statistics, Printf
+
+ds = NCDataset("data/grid_data.nc")
+temperature = coalesce.(ds["temperature"][:,:,:], Float32(NaN))
+# ... load all data ...
+
+# nanmean helper
+nanmean(a) = mean(a[.!isnan.(a)])
+
+# Print everything you want to know about the data
+println("=== PHASE A ===")
+println("Grid shape: ", size(temperature))
+# ... more inspection ...
+
+# When ready to run:
+pty_write(data="include(\"temp/eda_01_load.jl\")\n")
+# Then read output — read once, not between every line
+```
+
+This lets you:
+- Write full exploration code without waiting for each line
+- Iterate on your exploration by editing the file and re-including
+- Think in terms of "what do I want to know about this data" rather than "execute this line next"
+
 ## Visualization — GR Backend (No Display Required)
 
 ```julia

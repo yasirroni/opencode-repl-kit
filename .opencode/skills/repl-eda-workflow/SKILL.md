@@ -64,12 +64,18 @@ The recommended workflow is **one temp file per phase**, executed and refined in
 ```
 1. Write exploratory code for ONE phase to temp file (e.g., temp/eda_01_load.jl)
 2. Execute via language's include/exec pattern: include("temp/eda_01_load.jl")\n
-3. pty_read() → inspect output, find errors or interesting results
+3. Read output, find errors or interesting results
 4. Edit temp file to fix/refine
 5. Re-include and verify
 6. Move to next phase with new temp file
 7. After all phases explored, consolidate into single pipeline script
 ```
+
+**Rules for reading vs batching:**
+- **Write all commands first, then read once** when exploring a phase — don't need immediate output between lines
+- **Read after each write** only when you need that output to decide the next command
+- Think of it like writing a script: write all the exploration code, eval it, read results. Then decide what to do next.
+- This is especially powerful when doing exploratory EDA — inspect A, then based on A inspect B, etc.
 
 **Rules:**
 - Each temp file should be **short and focused** (one phase, one concern)

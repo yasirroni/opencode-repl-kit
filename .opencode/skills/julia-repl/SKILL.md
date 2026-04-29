@@ -43,6 +43,52 @@ pty_spawn(command="julia", args=["--project=julia/PackageName"], title="Julia RE
 
 **Wait ~8 seconds** for the `julia> ` prompt before sending commands.
 
+## Sending Commands — Minimize PTY Writes
+
+**Key insight:** PTY bridge latency accumulates per `pty_write` call. Each call has ~1-5ms overhead. For long-running Julia code (>1s), this is negligible. But for short operations, fewer writes = less overhead.
+
+### Best: File + include(), single pty_write
+
+```
+1. Write exploration code to temp/eda_01.jl
+2. Single pty_write: include("temp/eda_01.jl")\n
+3. Read results
+```
+
+**Benchmark (fresh REPL, Pkg setup):**
+- 4 separate pty_writes: ~1970ms (Julia) + 4×PTY = ~1980ms total
+- Single multiline pty_write: ~1075ms (Julia) + 1×PTY = ~1080ms total
+- File + include (1 pty_write): ~1253ms (Julia) + 1×PTY = ~1255ms total
+
+**Winner for complex exploration: File + include()** — edit-friendly, fast enough, single PTY call.
+
+### Good: Multiline single pty_write
+
+```
+pty_write(data="using Pkg; Pkg.activate(\"julia/PackageName\"); Pkg.instantiate(); using Revise\n")
+```
+
+Best for simple one-time setup where you don't need to iterate.
+
+### Avoid: Multiple sequential pty_writes
+
+Each `pty_write` adds latency. Unless you NEED to read output before sending the next command, don't do this:
+
+```
+# BAD — 4 PTY calls for 4 simple commands
+pty_write(data="using Pkg\n")
+pty_write(data="Pkg.activate(...)\n")
+pty_write(data="Pkg.instantiate()\n")
+pty_write(data="using Revise\n")
+```
+
+**Rule: One task = one pty_write. If you need to send multiple commands, combine them into one multiline write or use a file.**
+
+### When to read after write
+
+- Read when next command DEPENDS on previous output
+- Don't read when commands are independent — batch them
+
 ## Inline Code — Works for Most Cases
 
 Julia REPL handles multiline blocks correctly in a single write, including nested `if/elseif/else`:
