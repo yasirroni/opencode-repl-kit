@@ -130,6 +130,14 @@ This repo also contains the demo project that served as the test subject:
 
 These packages exist to prove the REPL workflows work. The real deliverable is the instruction files.
 
+## Environment
+
+On launching `opencode`, it is better to be done inside Python environment. From root directory:
+
+```sh
+source python/env/bin/activate
+```
+
 ## Requirements
 
 - MATLAB R2025b (or compatible version)
