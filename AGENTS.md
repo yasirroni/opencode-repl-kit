@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file and the skills in `.opencode/skills/` are the primary artifacts of this project. They are designed to be copied to other projects that require REPL interaction. The packages in `matlab/`, `python/`, and `julia/` exist only as test subjects — the real value is the verified PTY patterns, language-specific gotchas, and best practices documented here.
+This file, the skills in `.opencode/skills/`, and the agents in `.opencode/agents/` are the primary artifacts of this project. They are designed to be copied to other projects that require REPL interaction. The packages in `matlab/`, `python/`, and `julia/` exist only as test subjects — the real value is the verified PTY patterns, language-specific gotchas, and best practices documented here.
 
 ## Core Behavioral Guidelines
 
@@ -54,7 +54,7 @@ For multi-step tasks, state a brief plan:
 3. [Step] → verify: [check]
 ```
 
-## REPL Skills
+## Skills Overview
 
 Before working with any REPL, check if a skill in `.opencode/skills/` applies. Skills use YAML frontmatter with `name` and `description` fields — the description tells you when to use the skill.
 
@@ -82,6 +82,24 @@ Before working with any REPL, check if a skill in `.opencode/skills/` applies. S
 | `repl-cross-language` | Comparing Python/MATLAB/Julia REPL capabilities |
 | `repl-session-management` | Session lifecycle, pty_read best practices, checkpointing, recovery |
 
+### Workflow & Test Skills
+
+| Skill | When to Use |
+|-------|-------------|
+| `repl-eda-workflow` | Starting an EDA session in any language — phase-based workflow (A-G) |
+| `repl-test-python` | Testing the Python packagename package via REPL |
+| `repl-test-matlab` | Testing the MATLAB PackageName package via REPL |
+| `repl-test-julia` | Testing the Julia PackageName package via REPL |
+| `repl-pick-plan` | Selecting and executing a plan item from the project roadmap |
+| `repl-review` | Reviewing a completed task against EXECUTED.md |
+
+### Process Skills
+
+| Skill | When to Use |
+|-------|-------------|
+| `writing-a-skill` | Creating a new skill in this repo — conventions and checklist |
+| `updating-a-skill` | Modifying an existing skill — what can/cannot change, verification |
+
 ### Skill Structure
 
 Each skill is a directory with `SKILL.md` (YAML frontmatter + instructions) and optional `references/`, `scripts/`, `assets/` subdirectories. Skills follow the [Agent Skills specification](https://agentskills.io/specification).
@@ -91,6 +109,16 @@ Each skill is a directory with `SKILL.md` (YAML frontmatter + instructions) and 
 **`*-repl` skills** cover general language mechanics (spawn, `\n` rules, multiline patterns, backspace). **`*-repl-eda` skills** cover task-specific patterns (data loading, exploration phases, visualization).
 
 **Rule of thumb:** If the pattern exists in Python, MATLAB, and Julia REPL for the same reason, it belongs in the base `*-repl` skill. If it's unique to EDA workflows, it belongs in `*-repl-eda`.
+
+## Agents
+
+This project includes dispatchable subagents in `.opencode/agents/`. Agents are standalone entities with their own decision loop, tool access, and behavior rules — unlike skills which are reusable instruction sets loaded into another agent's context.
+
+| Agent | When to Dispatch |
+|-------|-----------------|
+| `shelldon` | REPL-first debugging, data inspection, interactive exploration. Spins up the right REPL, checks runtime state before writing code, and leaves a trail of temp/ files. |
+
+Agent files use YAML frontmatter with `description` and `mode: primary` fields (vs skills which use `name` and `description`).
 
 ## Investigation Order
 
